@@ -1,0 +1,5 @@
+nrfutil
+*.tar
+*.gz
+*.log
+*.tmp
