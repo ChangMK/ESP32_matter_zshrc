@@ -17,6 +17,12 @@ RUN apt update && apt install -y \
 		lsb-release curl sudo && \
 		apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# 設定語系（避免 locale 警告），若使用FROM ubuntu:20.04 要把下面的註示打開
+#RUN locale-gen en_US.UTF-8
+#ENV LANG=en_US.UTF-8
+#ENV LANGUAGE=en_US:en
+#ENV LC_ALL=en_US.UTF-8
+
 # === 建立使用者 devuser 並加入 dialout 群組 ===
 RUN useradd -ms /bin/zsh myuser && usermod -aG dialout myuser
 USER myuser
@@ -43,7 +49,7 @@ RUN sed -i 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' /home/myu
 		RUN curl -fsSL https://raw.githubusercontent.com/romkatv/powerlevel10k/refs/heads/master/config/p10k-rainbow.zsh -o /home/myuser/.p10k.zsh
 
 # 下載 zshrc
-		RUN curl -fsSL https://raw.githubusercontent.com/ChangMK/zshrc/refs/heads/main/.zshrc -o /home/myuser/.zshrc
+		RUN curl -fsSL https://raw.githubusercontent.com/ChangMK/ESP32_matter_zshrc/refs/heads/main/.zshrc -o /home/myuser/.zshrc
 		
 # === 安裝 west（Zephyr/Nordic 工具）安裝toolchain時會花很久時間,可能1小時===
 ENV PATH="/home/myuser/.local/bin:${PATH}"
@@ -64,6 +70,18 @@ west init -m https://github.com/nrfconnect/sdk-nrf --mr v2.4.0 v2.4.0 && \
 cd v2.4.0 && \
 west config manifest.group-filter +homekit
 # === west update 這裡需要手動執行===
-
+## 執行 west update
+#```bash
+# docker run -it --rm mynoridc_matter 
+#```
+# 進入docker後
+#```bash
+#cd Nordic_SDK/v2.4.0 && \
+#west update
+#```
+#更新期間會要求輸入git homekit的帳號密碼，直接Enter兩次。最後更新完成時會顯示
+#```bash
+#ERROR: update failed for project homekit
+#```
 # === 預設進入 zsh 開發環境 ===
 CMD ["zsh"]
